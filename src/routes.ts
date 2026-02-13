@@ -12,21 +12,48 @@ const actionItemController = new ActionItemController();
 
 export const router = Router();
 
+// router.get("/health", async (_, res) => {
+//   try {
+//     await pool.query("SELECT 1");
+
+//     res.json({
+//       status: "ok",
+//       database: "connected",
+//       llm: env.GROQ_API_KEY ? "configured" : "missing"
+//     });
+//   } catch (error: any) {
+//     console.error("Database error:", error.message);
+//     res.status(500).json({
+//       status: "error",
+//       database: "disconnected",
+//       error: error.message
+//     });
+//   }
+// });
+
+
 router.get("/health", async (_, res) => {
   try {
-    await pool.query("SELECT 1");
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("DB timeout")), 5000)
+    );
+
+    await Promise.race([
+      pool.query("SELECT 1"),
+      timeout
+    ]);
 
     res.json({
       status: "ok",
-      database: "connected",
-      llm: env.GROQ_API_KEY ? "configured" : "missing"
+      database: "connected"
     });
+
   } catch (error: any) {
-    console.error("Database error:", error.message);
+    console.error("DB ERROR:", error);
+
     res.status(500).json({
       status: "error",
-      database: "disconnected",
-      error: error.message
+      message: error.message
     });
   }
 });
