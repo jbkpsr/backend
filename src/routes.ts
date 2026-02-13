@@ -21,10 +21,12 @@ router.get("/health", async (_, res) => {
       database: "connected",
       llm: env.GROQ_API_KEY ? "configured" : "missing"
     });
-  } catch (error) {
+  } catch (error: any) {
+    console.error("Database error:", error.message);
     res.status(500).json({
       status: "error",
-      database: "disconnected"
+      database: "disconnected",
+      error: error.message
     });
   }
 });

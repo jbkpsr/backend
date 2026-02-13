@@ -1,4 +1,5 @@
 import { Pool } from "pg";
+import { env } from "./env";
 
 declare global {
   // eslint-disable-next-line no-var
@@ -8,7 +9,7 @@ declare global {
 const pool =
   global.pgPool ||
   new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: env.DATABASE_URL,
     ssl: {
       rejectUnauthorized: false,
     },
@@ -17,5 +18,8 @@ const pool =
 if (!global.pgPool) {
   global.pgPool = pool;
 }
+
+console.log("DATABASE_URL:", env.DATABASE_URL);
+
 
 export { pool };
