@@ -1,14 +1,21 @@
 import { Pool } from "pg";
 
-export const pool =
-  globalThis.pgPool ||
+declare global {
+  // eslint-disable-next-line no-var
+  var pgPool: Pool | undefined;
+}
+
+const pool =
+  global.pgPool ||
   new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
-      rejectUnauthorized: false
-    }
+      rejectUnauthorized: false,
+    },
   });
 
-if (!globalThis.pgPool) {
-  globalThis.pgPool = pool;
+if (!global.pgPool) {
+  global.pgPool = pool;
 }
+
+export { pool };
